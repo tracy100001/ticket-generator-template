@@ -5,12 +5,12 @@ set -e
 # === CONFIGURATION ===
 
 KEY_PATH="$HOME/Downloads/sols-keypair.pem"
-GIT_REPO="https://github.com/tracy"
+GIT_REPO="https://github.com/tracy100001/ticket-generator-template.git"
 BRANCH="main"
 
 # Define array of targets: "host user remote_dir sub_dir env_file"
 TARGETS=(
-  "ec2-18-116-21-198.us-east-2.compute.amazonaws.com ubuntu /home/ubuntu/ticketgenerator app .env.production"
+  "ec2-18-224-138-193.us-east-2.compute.amazonaws.com ubuntu /home/ubuntu/ticketgenerator app .env.production"
 )
 
 # === FUNCTIONS ===
@@ -25,7 +25,7 @@ run_stage() {
   echo "🔧 Running full deploy pipeline for $HOST..."
 
   echo ""
-  echo "➡️ [1/3] Provision and Clone Repo..."
+  echo "➡️ [1/2] Provision and Clone Repo..."
   ssh -i $KEY_PATH $USER@$HOST << EOF
     set -e
     sudo apt update
@@ -43,6 +43,11 @@ run_stage() {
       sudo chmod +x /usr/local/bin/docker-compose
     fi
 
+    if ! command -v git &> /dev/null; then
+      echo "Installing Git..."
+      sudo apt install -y git unzip curl
+    fi
+
     # Prepare project dir
     rm -rf $REMOTE_DIR
     mkdir -p $REMOTE_DIR
@@ -58,7 +63,7 @@ EOF
   # scp -i "$KEY_PATH" "$SUB_DIR/$ENV_FILE" "$USER@$HOST:$REMOTE_DIR/$SUB_DIR/.env"
 
   echo ""
-  echo "➡️ [2/3] Deploy via Docker Compose..."
+  echo "➡️ [2/2] Deploy via Docker Compose..."
   ssh -i $KEY_PATH $USER@$HOST << EOF
     set -e
     cd $REMOTE_DIR/$SUB_DIR

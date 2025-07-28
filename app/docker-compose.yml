@@ -1,11 +1,22 @@
 version: "3.8"
 
 services:
-  php-app:
-    build: .
-    container_name: ticket-generator
+  php-fpm:
+    build:
+      context: .
+    container_name: php-fpm
+    volumes:
+      - ./html:/var/www/html
+    expose:
+      - 9000
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx-server
     ports:
       - "8080:80"
     volumes:
       - ./html:/var/www/html
-    restart: unless-stopped
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php-fpm
