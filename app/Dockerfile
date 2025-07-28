@@ -9,14 +9,14 @@ RUN apt-get update && apt-get install -y \
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Clone the GitHub repo
-RUN git clone https://github.com/arikoart/faketicketgenerator.git /var/www/html
+RUN git clone https://github.com/arikoart/faketicketgenerator.git html
 
 # Set working directory
-WORKDIR /var/www/html
+WORKDIR /html
 
 # Optional: install PHP dependencies if needed
 # RUN composer install
 
 # Permissions
-RUN chown -R www-data:www-data /var/www/html
+RUN chown -R www-data:www-data /html
 
